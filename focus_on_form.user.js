@@ -8,23 +8,27 @@
 // @author         fluks
 // ==/UserScript==
 
-const UP    = 1,
-      DOWN  = -1,
-      CLEAR = 0;
-var count          = 0,
+const UP = 1,
+      DOWN = -1,
+      CLEAR = 0,
+      KEY_INPUT = '¤',
+      KEY_NEXT_LINK = '§',
+      KEY_PREVIOUS_LINK = '½';
+var count = 0,
     last_direction = CLEAR,
     links = document.links,
     prev_link = '';
 
-document.addEventListener("keypress", Focus, false);
+document.addEventListener("keypress", focus, false);
 
-function Focus(e) { 
-    // ¤. First <input='text' />
-    if(e.which === 164) {
+function focus(e) {
+    // First <input='text' />
+    if (e.key === KEY_INPUT) {
         var forms = document.forms;
-        for(var i = 0; i < forms.length; i++) {
-            for(var j = 0; j < forms[i].elements.length; j++) {
-                if(forms[i].elements[j].type === "text" || forms[i].elements[j].type === "search") {
+        for (var i = 0; i < forms.length; i++) {
+            for (var j = 0; j < forms[i].elements.length; j++) {
+                if (forms[i].elements[j].type === "text" ||
+                        forms[i].elements[j].type === "search") {
                     forms[i].elements[j].focus(); 
                     return;
                 }
@@ -33,28 +37,28 @@ function Focus(e) {
         return;
     }
     var aE = document.activeElement;
-    // §. Run downward through hyperlinks.
-    if(e.which === 167) {
+    // Run downward through hyperlinks.
+    if (e.key === KEY_NEXT_LINK) {
         if (aE.tagName === 'A' && aE.href !== prev_link) {
             count = getCount(aE, links, UP);
             last_direction = CLEAR;
         }
-        if(last_direction === UP) { count += 2 }
-        if(count === links.length) { count = 0 }
+        if (last_direction === UP) { count += 2 }
+        if (count === links.length) { count = 0 }
         links[count].focus();
         prev_link = links[count].href;
         last_direction = DOWN;
         count++;
         return;
     }
-    // ½. Run upwards through hyperlinks.
-    if(e.which === 189) {
+    // Run upwards through hyperlinks.
+    if (e.key === KEY_PREVIOUS_LINK) {
         if (aE.tagName === 'A' && aE.href !== prev_link) {
             count = getCount(aE, links, DOWN);
             last_direction = CLEAR;
         }
-        if(last_direction === DOWN) { count -= 2 }
-        if(count === -1) { count = links.length - 1 }
+        if (last_direction === DOWN) { count -= 2 }
+        if (count === -1) { count = links.length - 1 }
         links[count].focus();
         prev_link = links[count].href;
         last_direction = UP;
